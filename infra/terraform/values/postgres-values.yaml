@@ -1,0 +1,9 @@
+auth:
+  postgresPassword: "SuperSecretDBPassword123"
+  username: "sentinel_admin"
+  password: "SuperSecretDBPassword123"
+  database: "sentinelops_db"
+primary:
+  resourcesPreset: "nano"
+  persistence:
+    enabled: false # Simulación local sin persistencia para ahorrar I/O

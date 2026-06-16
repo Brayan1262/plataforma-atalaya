@@ -1,0 +1,21 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: analyzer-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: sentinel-analyzer-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sentinelops_db
+    username: sentinel_admin
+    password: SuperSecretDBPassword123
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

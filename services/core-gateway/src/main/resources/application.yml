@@ -1,0 +1,34 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: core-gateway
+  threads:
+    virtual:
+      enabled: true # Activa los Virtual Threads (Project Loom) en Java 21
+  cloud:
+    gateway:
+      routes:
+        - id: dummy_route
+          uri: http://httpbin.org:80
+          predicates:
+            - Path=/api/test/**
+          filters:
+            - RewritePath=/api/test/?(?<segment>.*), /$\{segment}
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
+                fallbackUri: forward:/fallback
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10

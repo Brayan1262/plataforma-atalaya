@@ -1,0 +1,8 @@
+# Keycloak Local Dev Values
+auth:
+  adminUser: admin
+  adminPassword: "SentinelPassword123!"
+httpRelativePath: "/"
+production: false
+postgresql:
+  enabled: true

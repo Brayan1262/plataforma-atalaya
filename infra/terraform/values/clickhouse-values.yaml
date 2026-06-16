@@ -1,0 +1,11 @@
+auth:
+  username: "sentinel_analyst"
+  password: "ClickHousePassword123"
+shards: 1
+replicaCount: 1
+zookeeper:
+  enabled: false # Usar clickhouse-keeper interno
+clickhouse:
+  resourcesPreset: "nano"
+persistence:
+  enabled: false

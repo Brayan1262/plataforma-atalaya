@@ -1,0 +1,7 @@
+# Vault Local Dev Values
+server:
+  dev:
+    enabled: true
+    devRootToken: "root-token"
+injector:
+  enabled: true
