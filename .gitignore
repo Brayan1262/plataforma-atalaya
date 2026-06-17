@@ -22,3 +22,12 @@ maven/
 
 # OS
 .DS_Store
+
+# Archivos grandes y generados localmente
+*.tar
+*.gz
+*.zip
+*.log
+node_modules/
+dist/
+.env

@@ -12,10 +12,12 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
   datasource:
-    url: jdbc:postgresql://localhost:5432/sentinelops_db
+    url: jdbc:postgresql://postgresql.data-layer.svc.cluster.local:5432/sentinelops_db
     username: sentinel_admin
     password: SuperSecretDBPassword123
+    driver-class-name: org.postgresql.Driver
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true

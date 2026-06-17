@@ -22,3 +22,19 @@ deploy-infra:
 clean: cluster-down
 	@rm -rf infra/terraform/.terraform
 	@rm -f infra/terraform/.terraform.lock.hcl
+
+build-apps:
+	@echo "Construyendo imagenes Docker (esto tomara unos minutos)..."
+	@docker build -t sentinelops/core-gateway:latest ./services/core-gateway
+	@docker build -t sentinelops/telemetry-service:latest ./services/telemetry-service
+	@docker build -t sentinelops/analyzer-service:latest ./services/analyzer-service
+
+load-apps: build-apps
+	@echo "Inyectando imagenes al cluster Kind..."
+	@kind load docker-image sentinelops/core-gateway:latest --name $(CLUSTER_NAME)
+	@kind load docker-image sentinelops/telemetry-service:latest --name $(CLUSTER_NAME)
+	@kind load docker-image sentinelops/analyzer-service:latest --name $(CLUSTER_NAME)
+
+deploy-apps: load-apps
+	@echo "Desplegando microservicios en Kubernetes..."
+	@kubectl apply -f infra/kubernetes/apps/apps.yaml

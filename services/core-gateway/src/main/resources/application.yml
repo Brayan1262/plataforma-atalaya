@@ -9,13 +9,22 @@ spring:
       enabled: true # Activa los Virtual Threads (Project Loom) en Java 21
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
       routes:
-        - id: dummy_route
-          uri: http://httpbin.org:80
+        - id: analyzer_stream_route
+          uri: http://analyzer-service.sentinelops-core.svc.cluster.local:80
           predicates:
-            - Path=/api/test/**
+            - Path=/api/stream/**
+        - id: telemetry_route
+          uri: http://telemetry-service.sentinelops-core.svc.cluster.local:80
+          predicates:
+            - Path=/api/telemetry/**
           filters:
-            - RewritePath=/api/test/?(?<segment>.*), /$\{segment}
             - name: CircuitBreaker
               args:
                 name: defaultCircuitBreaker

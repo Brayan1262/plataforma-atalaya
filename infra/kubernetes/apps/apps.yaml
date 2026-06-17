@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: core-gateway
+  namespace: sentinelops-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: core-gateway
+  template:
+    metadata:
+      labels:
+        app: core-gateway
+    spec:
+      containers:
+      - name: core-gateway
+        image: sentinelops/core-gateway:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SERVER_PORT
+          value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: core-gateway
+  namespace: sentinelops-core
+spec:
+  selector:
+    app: core-gateway
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telemetry-service
+  namespace: sentinelops-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telemetry-service
+  template:
+    metadata:
+      labels:
+        app: telemetry-service
+    spec:
+      containers:
+      - name: telemetry-service
+        image: sentinelops/telemetry-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SERVER_PORT
+          value: "8080"
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "sentinel-cluster-kafka-bootstrap.data-layer.svc.cluster.local:9092"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: telemetry-service
+  namespace: sentinelops-core
+spec:
+  selector:
+    app: telemetry-service
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analyzer-service
+  namespace: sentinelops-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analyzer-service
+  template:
+    metadata:
+      labels:
+        app: analyzer-service
+    spec:
+      containers:
+      - name: analyzer-service
+        image: sentinelops/analyzer-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SERVER_PORT
+          value: "8080"
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "sentinel-cluster-kafka-bootstrap.data-layer.svc.cluster.local:9092"
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://postgresql.data-layer.svc.cluster.local:5432/sentinelops_db"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: sentinel-gateway
+  namespace: sentinelops-core
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: sentinel-vs
+  namespace: sentinelops-core
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - sentinel-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /api/telemetry
+    route:
+    - destination:
+        host: core-gateway
+        port:
+          number: 80

@@ -1,0 +1,54 @@
+.metrics-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metrics-title {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.metrics-value-container {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.metrics-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.color-cyan .metrics-value {
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+}
+
+.color-green .metrics-value {
+  text-shadow: 0 0 20px rgba(0, 230, 118, 0.3);
+}
+
+.metrics-unit {
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.metrics-trend {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: auto;
+}
+
+.trend-up {
+  color: var(--neon-green);
+}
+
+.trend-down {
+  color: #FF1744;
+}
